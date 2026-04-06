@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="VORTEX PRIME OP — The Premier Study Ocean Promotional Platform" />
+  <title>STUDY OCEAN PROMOTER &mdash; VORTEX PRIME OP</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Glitch CSS (page-specific) */
+    .glitch-text {
+      position: relative;
+    }
+    .glitch-active::before,
+    .glitch-active::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      background: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .glitch-active::before {
+      background: linear-gradient(135deg, #ff003c, #00e5ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      left: 2px;
+      animation: glitchShift 0.1s step-end;
+    }
+    .glitch-active::after {
+      background: linear-gradient(135deg, #00e5ff, #b300ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      left: -2px;
+      animation: glitchShift2 0.1s step-end;
+    }
+    @keyframes glitchShift  { 0%{clip-path:inset(10% 0 80% 0)} 50%{clip-path:inset(60% 0 10% 0)} 100%{clip-path:inset(30% 0 50% 0)} }
+    @keyframes glitchShift2 { 0%{clip-path:inset(70% 0 5% 0)}  50%{clip-path:inset(20% 0 60% 0)} 100%{clip-path:inset(45% 0 25% 0)} }
+  </style>
+</head>
+<body>
+
+  <!-- =====================================================
+       INTRO CINEMATIC
+       ===================================================== -->
+  <div id="intro-overlay" aria-hidden="true">
+    <div class="scanlines"></div>
+    <div class="screen-glow"></div>
+    <div class="energy-dot"></div>
+    <div class="intro-text">
+      <div class="intro-brand">
+        &#9889;&nbsp;VORTEX PRIME OP&nbsp;&#9889;
+      </div>
+      <div class="intro-sub">THE PROMOTER</div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       BACKGROUND LAYERS
+       ===================================================== -->
+  <div class="bg-gradient-animated" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <canvas id="particle-canvas" aria-hidden="true"
+    style="position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.6;"></canvas>
+
+  <!-- =====================================================
+       HEADER
+       ===================================================== -->
+  <header role="banner">
+    <div class="header-logo">
+      VORTEX PRIME OP
+      <span>THE PROMOTER &mdash; STUDY OCEAN</span>
+    </div>
+    <div class="status-bar">
+      <div class="status-dot" aria-hidden="true"></div>
+      <span>SYSTEM ONLINE</span>
+      <span style="margin-left:0.8rem;opacity:0.5;">&#124;</span>
+      <span id="live-time" style="margin-left:0.8rem;"></span>
+    </div>
+  </header>
+
+  <!-- =====================================================
+       TICKER
+       ===================================================== -->
+  <div class="ticker-wrap" aria-hidden="true">
+    <span class="ticker-content">
+      &#9889;&nbsp;VORTEX PRIME OP &mdash; THE PROMOTER&nbsp;&#9733;&nbsp;
+      STUDY OCEAN PROMOTER &mdash; LIVE DEALS ACTIVE&nbsp;&#9733;&nbsp;
+      PREMIUM PROMOTIONS ONLINE&nbsp;&#9889;&nbsp;
+      VORTEX PRIME OP &mdash; UNLOCKING KNOWLEDGE&nbsp;&#9733;&nbsp;
+      STUDY OCEAN &mdash; ELEVATE YOUR LEARNING&nbsp;&#9889;&nbsp;
+      VORTEX PRIME OP &mdash; THE PROMOTER&nbsp;&#9733;&nbsp;
+    </span>
+  </div>
+
+  <!-- =====================================================
+       MAIN CONTENT
+       ===================================================== -->
+  <main id="main-content" role="main">
+
+    <!-- HERO -->
+    <section class="hero-section" aria-labelledby="hero-title">
+      <p class="hero-eyebrow">&#9654;&nbsp;OFFICIAL PROMOTER PLATFORM&nbsp;&#9664;</p>
+      <h1 class="hero-title glitch-text" id="hero-title" data-text="STUDY OCEAN PROMOTER">
+        STUDY OCEAN PROMOTER
+      </h1>
+      <p class="hero-subtitle">
+        VORTEX PRIME OP &mdash; POWERED BY ELITE TECHNOLOGY
+      </p>
+      <div class="neon-divider" aria-hidden="true"></div>
+    </section>
+
+    <!-- LIVE PROMOTIONS -->
+    <section class="promotions-section scroll-reveal" aria-labelledby="promo-heading">
+      <div class="glass-container">
+        <h2 class="section-heading" id="promo-heading">
+          &#128248;&nbsp;LIVE PROMOTIONS
+        </h2>
+        <p class="section-desc">
+          &#9654;&nbsp;All active promotional offers &mdash; updated in real time
+        </p>
+
+        <div class="promo-grid" id="promo-grid" role="list" aria-label="Promotional images gallery">
+          <!-- Images injected by script.js -->
+          <div class="promo-empty">
+            <span class="promo-empty-icon">&#128248;</span>
+            SCANNING PROMOTIONS&hellip;
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS (info strip) -->
+    <section class="scroll-reveal" aria-labelledby="info-heading"
+      style="margin-bottom:3rem;">
+      <div class="glass-container" style="border-color:rgba(255,0,60,0.18);">
+        <h2 class="section-heading" id="info-heading" style="color:var(--neon-red);text-shadow:0 0 12px var(--neon-red);">
+          &#9888;&nbsp;HOW THIS WORKS
+        </h2>
+        <p class="section-desc">Promotions are served directly from the <code style="color:var(--neon-blue)">/promotions/</code> folder.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1rem;">
+          <div style="padding:1rem;border:1px solid rgba(0,229,255,0.12);border-radius:8px;text-align:center;">
+            <div style="font-size:1.8rem;margin-bottom:0.5rem;">&#128190;</div>
+            <div style="font-size:0.78rem;letter-spacing:0.08em;color:var(--text-dim);">
+              Place images in the <strong style="color:var(--neon-blue)">promotions/</strong> folder
+            </div>
+          </div>
+          <div style="padding:1rem;border:1px solid rgba(0,229,255,0.12);border-radius:8px;text-align:center;">
+            <div style="font-size:1.8rem;margin-bottom:0.5rem;">&#9998;</div>
+            <div style="font-size:0.78rem;letter-spacing:0.08em;color:var(--text-dim);">
+              Name them <strong style="color:var(--neon-blue)">promo1.jpg, promo2.jpg&hellip;</strong>
+            </div>
+          </div>
+          <div style="padding:1rem;border:1px solid rgba(0,229,255,0.12);border-radius:8px;text-align:center;">
+            <div style="font-size:1.8rem;margin-bottom:0.5rem;">&#9889;</div>
+            <div style="font-size:0.78rem;letter-spacing:0.08em;color:var(--text-dim);">
+              They appear here <strong style="color:var(--neon-blue)">automatically</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN ACCESS -->
+    <section class="admin-access-section scroll-reveal" aria-label="Admin access">
+      <div class="glass-container" style="max-width:480px;margin:0 auto;text-align:center;
+        border-color:rgba(255,0,60,0.18);">
+        <p style="font-size:0.7rem;letter-spacing:0.2em;color:var(--text-dim);margin-bottom:1rem;text-transform:uppercase;">
+          &#128274;&nbsp;Restricted Area
+        </p>
+        <p style="font-size:0.82rem;letter-spacing:0.06em;color:var(--text-dim);margin-bottom:1.5rem;">
+          Authorized personnel only. Admin panel for managing promotions.
+        </p>
+        <a href="admin.html" class="btn-admin" role="button">
+          <span>&#128274;&nbsp;ADMIN ACCESS</span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =====================================================
+       FOOTER
+       ===================================================== -->
+  <footer role="contentinfo">
+    <strong>VORTEX PRIME OP</strong> &mdash; STUDY OCEAN PROMOTER<br>
+    <span style="opacity:0.4;font-size:0.62rem;">
+      &#9889;&nbsp;CINEMATIC HACKER PLATFORM &mdash; ALL SYSTEMS NOMINAL&nbsp;&#9889;
+    </span>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Live clock
+    (function () {
+      const el = document.getElementById('live-time');
+      if (!el) return;
+      function tick() {
+        const now = new Date();
+        el.textContent = now.toLocaleTimeString('en-US', { hour12: false });
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+
+</body>
+</html>

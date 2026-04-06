@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADMIN PANEL &mdash; VORTEX PRIME OP</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Preview thumbnail */
+    #preview-img {
+      display: none;
+      width: 100%;
+      max-height: 220px;
+      object-fit: contain;
+      border-radius: 8px;
+      border: 1px solid rgba(0,229,255,0.2);
+      margin-top: 1rem;
+      box-shadow: 0 0 16px var(--neon-blue-dim);
+    }
+
+    /* Terminal log */
+    .terminal-log {
+      background: #000;
+      border: 1px solid rgba(0,229,255,0.15);
+      border-radius: 6px;
+      padding: 1rem;
+      font-size: 0.76rem;
+      letter-spacing: 0.06em;
+      color: #a8e6cf;
+      line-height: 1.8;
+      min-height: 140px;
+      overflow-y: auto;
+      max-height: 240px;
+    }
+
+    .terminal-log .log-line { margin: 0; }
+    .terminal-log .log-line.info  { color: var(--neon-blue); }
+    .terminal-log .log-line.warn  { color: #ffcc00; }
+    .terminal-log .log-line.error { color: var(--neon-red); }
+    .terminal-log .log-line.ok    { color: #00ff6e; }
+
+    /* Current images list */
+    .current-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .current-thumb {
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(0,229,255,0.18);
+      aspect-ratio: 1;
+      background: rgba(0,10,25,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .current-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.85);
+      transition: filter 0.3s;
+    }
+    .current-thumb:hover img { filter: brightness(1); }
+
+    /* Info note box */
+    .note-box {
+      background: rgba(0,229,255,0.04);
+      border: 1px solid rgba(0,229,255,0.15);
+      border-left: 3px solid var(--neon-blue);
+      border-radius: 4px;
+      padding: 0.8rem 1rem;
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    .note-box.red-note {
+      border-left-color: var(--neon-red);
+      background: rgba(255,0,60,0.04);
+    }
+
+    /* Section divider */
+    .panel-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,229,255,0.2), transparent);
+      margin: 1.5rem 0;
+    }
+
+    /* Animate in */
+    .panel-card {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: cardIn 0.5s ease forwards;
+    }
+    .panel-card:nth-child(2) { animation-delay: 0.1s; }
+    .panel-card:nth-child(3) { animation-delay: 0.2s; }
+    .panel-card:nth-child(4) { animation-delay: 0.3s; }
+    @keyframes cardIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background -->
+  <div class="bg-gradient-animated" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <canvas id="particle-canvas" aria-hidden="true"
+    style="position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.35;"></canvas>
+
+  <!-- Header bar -->
+  <header role="banner">
+    <div class="header-logo">
+      VORTEX PRIME OP
+      <span>ADMIN CONTROL PANEL</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+      <div class="status-bar">
+        <div class="status-dot"></div>
+        <span>ADMIN AUTHENTICATED</span>
+      </div>
+      <a href="index.html" class="btn-logout" role="button" aria-label="Exit admin panel">
+        &#8592;&nbsp;EXIT PANEL
+      </a>
+    </div>
+  </header>
+
+  <!-- =====================================================
+       UPLOAD WRAPPER
+       ===================================================== -->
+  <main class="upload-wrapper" role="main">
+    <div style="max-width:1100px;margin:0 auto;">
+
+      <!-- Admin bar -->
+      <div class="upload-header-bar">
+        <div>
+          <div class="upload-header-title">
+            &#9881;&nbsp;PROMOTIONS MANAGEMENT
+          </div>
+          <div style="font-size:0.68rem;color:var(--text-dim);letter-spacing:0.08em;margin-top:0.2rem;">
+            VORTEX PRIME OP &mdash; STUDY OCEAN PROMOTER
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.6rem;">
+          <span class="badge-admin">&#128274;&nbsp;ADMIN</span>
+          <span id="panel-time" style="font-size:0.7rem;color:var(--text-dim);letter-spacing:0.1em;"></span>
+        </div>
+      </div>
+
+      <!-- Grid layout -->
+      <div class="upload-grid">
+
+        <!-- LEFT COLUMN: Upload + Instructions -->
+        <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+          <!-- Upload card -->
+          <div class="glass-container panel-card">
+            <h2 class="section-heading">
+              &#8679;&nbsp;ADD PROMOTION
+            </h2>
+            <p class="section-desc">Drag &amp; drop an image or click to select</p>
+
+            <!-- Drop zone -->
+            <div class="drop-zone" id="drop-zone" role="button"
+              tabindex="0" aria-label="Drag and drop area for image upload">
+              <span class="drop-zone-icon" aria-hidden="true">&#128248;</span>
+              <p class="drop-zone-text">DROP IMAGE HERE</p>
+              <p class="drop-zone-sub">or click to browse &mdash; JPG &middot; PNG &middot; WEBP &middot; GIF</p>
+              <input type="file" id="file-input" accept="image/*" aria-hidden="true" />
+            </div>
+
+            <!-- Preview -->
+            <img id="preview-img" alt="Selected image preview" />
+
+            <!-- Status message -->
+            <div id="upload-status"
+              style="margin-top:1rem;font-size:0.78rem;letter-spacing:0.07em;
+              color:var(--text-dim);line-height:1.7;min-height:2.5rem;">
+            </div>
+          </div>
+
+          <!-- Instructions card -->
+          <div class="glass-container panel-card">
+            <h2 class="section-heading" style="color:var(--neon-red);text-shadow:0 0 12px var(--neon-red);">
+              &#9660;&nbsp;DEPLOYMENT GUIDE
+            </h2>
+            <p class="section-desc">How to publish new promotions &mdash; no backend needed</p>
+
+            <ol class="steps-list">
+              <li>
+                Locate the <strong>/promotions/</strong> folder in your project root (or the deployed site's public folder).
+              </li>
+              <li>
+                Copy your image file into the folder. Name it using the pattern:
+                <div class="code-block">promo1.jpg &nbsp;&bull;&nbsp; promo2.png &nbsp;&bull;&nbsp; promo3.webp</div>
+              </li>
+              <li>
+                The file name number determines the order. Start from <strong>promo1</strong> and increment sequentially.
+              </li>
+              <li>
+                Reload the homepage &mdash; the image will appear <strong>automatically</strong> in the live gallery.
+              </li>
+              <li>
+                To remove a promotion, delete the file from the <strong>/promotions/</strong> folder and redeploy.
+              </li>
+            </ol>
+
+            <div class="panel-divider"></div>
+
+            <div class="note-box red-note">
+              <strong style="color:var(--neon-red);">&#9888;&nbsp;IMPORTANT:</strong>
+              This platform uses <strong>static hosting</strong>. File uploads from the browser UI
+              are not saved to the server automatically &mdash; you must manually place files in the
+              promotions folder and redeploy or commit via your hosting platform (Vercel, Netlify, etc.).
+            </div>
+          </div>
+
+        </div><!-- /left column -->
+
+        <!-- RIGHT COLUMN: Terminal + Current promos -->
+        <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+          <!-- Terminal log card -->
+          <div class="glass-container panel-card">
+            <h2 class="section-heading">
+              &#9632;&nbsp;SYSTEM TERMINAL
+            </h2>
+            <p class="section-desc">Activity log &mdash; read-only</p>
+            <div class="terminal-log" id="terminal-log" aria-label="System terminal log" aria-live="polite">
+              <p class="log-line ok">&#9608; SYSTEM INITIALIZED</p>
+              <p class="log-line info">&#9608; ADMIN AUTHENTICATED &mdash; ACCESS GRANTED</p>
+              <p class="log-line info">&#9608; VORTEX PRIME OP v2.0 RUNNING</p>
+              <p class="log-line info">&#9608; PROMOTIONS MODULE LOADED</p>
+              <p class="log-line ok">&#9608; READY FOR COMMANDS&hellip; <span class="cursor-blink"></span></p>
+            </div>
+          </div>
+
+          <!-- Current images card -->
+          <div class="glass-container panel-card">
+            <h2 class="section-heading">
+              &#128248;&nbsp;CURRENT PROMOTIONS
+            </h2>
+            <p class="section-desc">Images detected in promotions/ folder</p>
+            <div class="current-grid" id="current-grid">
+              <div style="grid-column:1/-1;text-align:center;padding:1.5rem;
+                font-size:0.75rem;color:var(--text-dim);letter-spacing:0.08em;
+                border:1px dashed rgba(0,229,255,0.12);border-radius:8px;">
+                SCANNING&hellip;
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick reference card -->
+          <div class="glass-container panel-card">
+            <h2 class="section-heading" style="font-size:0.9rem;">
+              &#9642;&nbsp;QUICK REFERENCE
+            </h2>
+            <div style="display:flex;flex-direction:column;gap:0.6rem;margin-top:0.5rem;">
+              <div class="note-box">
+                <strong style="color:var(--neon-blue);">Supported formats:</strong><br>
+                JPG / JPEG &middot; PNG &middot; WEBP &middot; GIF (animated)
+              </div>
+              <div class="note-box">
+                <strong style="color:var(--neon-blue);">Recommended dimensions:</strong><br>
+                Min 600&times;400px &middot; Max 2400&times;1600px
+              </div>
+              <div class="note-box">
+                <strong style="color:var(--neon-blue);">Naming convention:</strong><br>
+                promo<em>N</em>.ext &mdash; e.g. <code style="color:#a8e6cf">promo7.webp</code>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /right column -->
+
+      </div><!-- /upload-grid -->
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer role="contentinfo">
+    <strong>VORTEX PRIME OP</strong> &mdash; ADMIN CONTROL PANEL &mdash; ALL ACTIONS LOGGED
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Panel clock
+    (function () {
+      const el = document.getElementById('panel-time');
+      if (!el) return;
+      function tick() {
+        el.textContent = new Date().toLocaleTimeString('en-US', { hour12: false });
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+
+    // Image preview on file select
+    (function () {
+      const fileInput = document.getElementById('file-input');
+      const preview = document.getElementById('preview-img');
+      const statusMsg = document.getElementById('upload-status');
+      const log = document.getElementById('terminal-log');
+      if (!fileInput || !preview) return;
+
+      function addLog(msg, type) {
+        if (!log) return;
+        const p = document.createElement('p');
+        p.className = 'log-line ' + (type || 'info');
+        p.innerHTML = '&#9608; ' + msg;
+        log.appendChild(p);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      fileInput.addEventListener('change', function () {
+        const file = fileInput.files[0];
+        if (!file) return;
+        const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        if (!validTypes.includes(file.type)) {
+          addLog('REJECTED: ' + escapeHtml(file.name) + ' &mdash; invalid type', 'error');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          addLog('LOADED: ' + escapeHtml(file.name) + ' (' + formatBytes(file.size) + ')', 'ok');
+        };
+        reader.readAsDataURL(file);
+      });
+
+      function formatBytes(b) {
+        if (b < 1024) return b + ' B';
+        if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+        return (b / (1024 * 1024)).toFixed(2) + ' MB';
+      }
+      function escapeHtml(s) {
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      }
+    })();
+
+    // Scan current promotions folder and show thumbnails
+    (function () {
+      const grid = document.getElementById('current-grid');
+      const log = document.getElementById('terminal-log');
+      if (!grid) return;
+
+      function addLog(msg, type) {
+        if (!log) return;
+        const p = document.createElement('p');
+        p.className = 'log-line ' + (type || 'info');
+        p.innerHTML = '&#9608; ' + msg;
+        log.appendChild(p);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      const probeList = [];
+      const extensions = ['jpg','jpeg','png','webp','gif'];
+      for (let i = 1; i <= 20; i++) {
+        extensions.forEach(function (ext) {
+          probeList.push('promotions/promo' + i + '.' + ext);
+        });
+      }
+
+      function tryLoad(src) {
+        return new Promise(function (resolve) {
+          const img = new Image();
+          img.onload = function () { resolve({ src: src, ok: true }); };
+          img.onerror = function () { resolve({ src: src, ok: false }); };
+          img.src = src;
+        });
+      }
+
+      Promise.all(probeList.map(tryLoad)).then(function (results) {
+        const valid = results.filter(function (r) { return r.ok; });
+        grid.innerHTML = '';
+
+        if (!valid.length) {
+          grid.innerHTML =
+            '<div style="grid-column:1/-1;text-align:center;padding:1.5rem;' +
+            'font-size:0.75rem;color:var(--text-dim);letter-spacing:0.08em;' +
+            'border:1px dashed rgba(0,229,255,0.12);border-radius:8px;">' +
+            'NO PROMOTIONS FOUND &mdash; Add images to promotions/ folder' +
+            '</div>';
+          addLog('GALLERY SCAN: 0 promotions found', 'warn');
+          return;
+        }
+
+        addLog('GALLERY SCAN: ' + valid.length + ' promotions detected', 'ok');
+
+        valid.forEach(function (item) {
+          const wrap = document.createElement('div');
+          wrap.className = 'current-thumb';
+          const img = document.createElement('img');
+          img.src = item.src;
+          img.alt = item.src;
+          img.loading = 'lazy';
+          img.title = item.src;
+          wrap.appendChild(img);
+          grid.appendChild(wrap);
+          addLog('LOADED: ' + item.src, 'info');
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADMIN ACCESS &mdash; VORTEX PRIME OP</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Shake animation for wrong password */
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-8px); }
+      40%      { transform: translateX(8px); }
+      60%      { transform: translateX(-5px); }
+      80%      { transform: translateX(5px); }
+    }
+    .form-input--shake { animation: shake 0.55s ease; }
+
+    /* Scan line overlay for login page */
+    .login-scanlines {
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(255, 0, 60, 0.025) 3px,
+        rgba(255, 0, 60, 0.025) 4px
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Floating particles small */
+    .login-particle {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: floatParticle linear infinite;
+      opacity: 0.15;
+    }
+    @keyframes floatParticle {
+      from { transform: translateY(100vh) scale(0); opacity: 0; }
+      10%  { opacity: 0.15; }
+      90%  { opacity: 0.1; }
+      to   { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+    }
+
+    /* Show/hide password */
+    .input-wrap {
+      position: relative;
+    }
+    .input-wrap .show-pass {
+      position: absolute;
+      right: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      font-family: var(--font-terminal);
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+      padding: 0.2rem;
+    }
+    .input-wrap .show-pass:hover { color: var(--neon-blue); }
+    .input-wrap .form-input { padding-right: 3.5rem; }
+
+    /* Access denied animation line */
+    .denied-line {
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      border-right: 2px solid var(--neon-red);
+      animation: typeLine 1s steps(30) forwards, cursorBlink 0.8s step-end infinite;
+      max-width: 100%;
+    }
+    @keyframes typeLine {
+      from { max-width: 0; }
+      to   { max-width: 100%; }
+    }
+
+    /* Back link */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-decoration: none;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      transition: color 0.25s;
+    }
+    .back-link:hover { color: var(--neon-blue); }
+
+    /* Security indicators */
+    .security-badges {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+    .badge {
+      padding: 0.25rem 0.7rem;
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      border: 1px solid;
+      border-radius: 3px;
+    }
+    .badge-blue  { color: var(--neon-blue);   border-color: rgba(0,229,255,0.3); }
+    .badge-red   { color: var(--neon-red);    border-color: rgba(255,0,60,0.3);  }
+    .badge-green { color: #00ff6e;            border-color: rgba(0,255,110,0.3); }
+  </style>
+</head>
+<body>
+
+  <!-- Background layers -->
+  <div class="bg-gradient-animated" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="login-scanlines" aria-hidden="true"></div>
+  <canvas id="particle-canvas" aria-hidden="true"
+    style="position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.45;"></canvas>
+
+  <!-- Top nav bar -->
+  <header role="banner" style="justify-content:space-between;">
+    <div class="header-logo">
+      VORTEX PRIME OP
+      <span>SECURE ACCESS PORTAL</span>
+    </div>
+    <a href="index.html" class="back-link" aria-label="Return to homepage">
+      &#8592;&nbsp;BACK TO SITE
+    </a>
+  </header>
+
+  <!-- =====================================================
+       LOGIN WRAPPER
+       ===================================================== -->
+  <main class="login-wrapper" role="main">
+    <div class="login-box">
+
+      <!-- Lock icon -->
+      <div style="text-align:center;margin-bottom:1.5rem;font-size:3rem;
+        filter:drop-shadow(0 0 16px var(--neon-red));animation:pulse 2s ease-in-out infinite;">
+        &#128274;
+      </div>
+
+      <div class="glass-container">
+
+        <h1 class="login-title">
+          &#128274;&nbsp;ADMIN ACCESS
+        </h1>
+        <p class="login-subtitle">
+          VORTEX PRIME OP &mdash; RESTRICTED ZONE
+        </p>
+
+        <!-- Login form -->
+        <form id="login-form" novalidate autocomplete="off">
+          <div class="form-group">
+            <label class="form-label" for="password-input">
+              &#9654;&nbsp;ENTER ACCESS CODE
+            </label>
+            <div class="input-wrap">
+              <input
+                class="form-input"
+                id="password-input"
+                type="password"
+                placeholder="&#9642;&#9642;&#9642;&#9642;&#9642;&#9642;&#9642;&#9642;&#9642;&#9642;"
+                aria-label="Admin password"
+                maxlength="32"
+                autocomplete="off"
+                spellcheck="false"
+                required
+              />
+              <button type="button" class="show-pass" id="toggle-pass"
+                aria-label="Toggle password visibility">
+                SHOW
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-login" id="login-btn">
+            &#9654;&nbsp;&nbsp;AUTHENTICATE
+          </button>
+        </form>
+
+        <!-- Attempt counter -->
+        <p class="attempt-counter" id="attempt-info" style="display:none;">
+          &#9888;&nbsp;FAILED ATTEMPTS:&nbsp;<span id="attempt-count">0</span>
+        </p>
+
+        <!-- Warning panel (breach detected) -->
+        <div class="warning-panel" id="warning-panel" role="alert" aria-live="assertive">
+          <p class="warning-title">
+            &#9888;&nbsp;SYSTEM BREACH DETECTED
+          </p>
+          <p class="warning-msg">
+            UNAUTHORIZED ACCESS ATTEMPT<br>
+            YOU ARE BEING TRACKED
+          </p>
+          <p class="ip-line" id="ip-line">TRACING IP: &hellip;</p>
+        </div>
+
+        <!-- Security badges -->
+        <div class="security-badges" aria-hidden="true">
+          <span class="badge badge-blue">&#128274;&nbsp;256-BIT ENCRYPTED</span>
+          <span class="badge badge-green">&#9899;&nbsp;FIREWALL ACTIVE</span>
+          <span class="badge badge-red">&#9888;&nbsp;MONITORED</span>
+        </div>
+
+      </div><!-- /.glass-container -->
+    </div><!-- /.login-box -->
+  </main>
+
+  <!-- Footer -->
+  <footer role="contentinfo">
+    <strong>VORTEX PRIME OP</strong> &mdash; ALL ACCESS ATTEMPTS ARE LOGGED
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Toggle show/hide password
+    (function () {
+      const toggleBtn = document.getElementById('toggle-pass');
+      const input = document.getElementById('password-input');
+      if (!toggleBtn || !input) return;
+      let visible = false;
+      toggleBtn.addEventListener('click', function () {
+        visible = !visible;
+        input.type = visible ? 'text' : 'password';
+        toggleBtn.textContent = visible ? 'HIDE' : 'SHOW';
+        input.focus();
+      });
+    })();
+
+    // Show attempt counter after first fail
+    (function () {
+      const form = document.getElementById('login-form');
+      const attemptInfo = document.getElementById('attempt-info');
+      if (!form || !attemptInfo) return;
+      let fired = false;
+      form.addEventListener('submit', function () {
+        if (!fired) {
+          attemptInfo.style.display = 'block';
+          fired = true;
+        }
+      });
+    })();
+
+    // Spawn floating particles
+    (function () {
+      const colors = ['var(--neon-red)', 'var(--neon-blue)', 'var(--neon-purple)'];
+      for (let i = 0; i < 12; i++) {
+        const p = document.createElement('div');
+        p.className = 'login-particle';
+        const size = Math.random() * 5 + 3;
+        p.style.cssText =
+          'width:' + size + 'px;height:' + size + 'px;' +
+          'background:' + colors[i % colors.length] + ';' +
+          'left:' + Math.random() * 100 + '%;' +
+          'animation-duration:' + (Math.random() * 8 + 6) + 's;' +
+          'animation-delay:' + Math.random() * 6 + 's;';
+        document.body.appendChild(p);
+      }
+    })();
+
+    // Pulse keyframe for lock icon (inline)
+    const style = document.createElement('style');
+    style.textContent =
+      '@keyframes pulse{0%,100%{filter:drop-shadow(0 0 16px var(--neon-red))}' +
+      '50%{filter:drop-shadow(0 0 32px var(--neon-red)) drop-shadow(0 0 8px var(--neon-blue))}}';
+    document.head.appendChild(style);
+  </script>
+
+</body>
+</html>
